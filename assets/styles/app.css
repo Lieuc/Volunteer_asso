@@ -1,3 +1,18 @@
+@import "tailwindcss";
+@source not "../../public";
+
+@font-face {
+    font-family: 'Inter';
+    src: url('../fonts/Inter-VariableFont_opsz,wght.ttf') format('truetype');
+    font-weight: 100 900;
+    font-style: normal;
+}
+
+* {
+    font-family: Inter, sans-serif;
+}
+
 body {
-    background-color: skyblue;
+    height: 100dvh;
+    margin: 0;
 }

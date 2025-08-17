@@ -1,0 +1,154 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Hello AssociationController!{% endblock %}
+
+{% block body %}
+<style>
+    .example-wrapper { margin: 1em auto; max-width: 800px; width: 95%; font: 18px/1.5 sans-serif; }
+    .example-wrapper code { background: #F5F5F5; padding: 2px 6px; }
+</style>
+
+    <div class="px-24 py-16">
+        <div class="w-full flex items-center justify-between">
+            <h1 class="flex items-center gap-4 text-4xl font-semibold">{{ ux_icon('lucide:group', { 'class': 'w-10 h-10' }) }} Vos associations</h1>
+            <a id="openNewAssoModal" href="#" class="text-3xl border-1 border-gray-300 px-8 py-4 rounded-2xl">Ajouter</a>
+        </div>
+        <p class="mt-8 text-2xl text-gray-500">Créer une ou plusieurs associations et commencez à proposer des missions.</p>
+        {{ form_start(form, { attr: { class: 'mb-6' } }) }}
+        <div class="flex items-center mt-10 gap-4">
+            {{ form_widget(form.searchTerm) }}
+            <button class="px-8 py-4 bg-black text-white rounded-xl">Rechercher</button>
+        </div>
+        {{ form_end(form) }}
+
+        {% if associations is not empty %}
+            <p class="text-gray-500">Associations trouvées: {{ associations|length }}</p>
+            <ul class="space-y-4 mt-6 pb-10">
+                {% for association in associations %}
+                    <li class="px-8 py-8 border border-gray-300 rounded-2xl flex justify-between items-center" onclick="(function() { window.location.href = '{{ path('app_association_page', { 'id': association.id}) }}'; })()">
+                        <header class="flex">
+                            <div class="1/4">
+                                {% if association.logoUrl is not null %}
+                                    <img src="{{ association.logoUrl }}" alt="" class="w-25 h-25 rounded-full">
+                                {% else %}
+                                    <div class="w-25 h-25 bg-gray-200 rounded-full flex items-center justify-center">
+                                        {{ ux_icon('lucide:group', { 'class': 'w-15 h-15 text-gray-500' }) }}
+                                    </div>
+                                {% endif %}
+                            </div>
+                            <div class="flex flex-col px-12 py-4">
+                                <div class="flex items-center gap-4">
+                                    <p class="text-3xl">{{ association.name }}</p>
+                                    <p class="text-xl px-4 py-2 bg-gray-200 rounded-xl">{{ association.isValidated ? 'Validée' : 'Non validée'}}</p>
+                                </div>
+                                <p class="text-xl flex items-center gap-2 mt-2 text-gray-500">{{ ux_icon('lucide:text', { 'class': 'w-6'}) }} {{ association.description }}</p>
+                            </div>
+                        </header>
+                    </li>
+                {% endfor %}
+            </ul>
+        {% elseif form.vars.submitted %}
+            <div class="flex flex-col items-center justify-center mt-20 gap-4">
+                <div class="w-25 h-25 rounded-full flex items-center justify-center">
+                    {{ ux_icon('lucide:association', { 'class': 'w-25 h-25 text-gray-500' }) }}
+                </div>
+                <p class="text-2xl text-gray-500">Aucune association trouvé</p>
+            </div>
+        {% endif %}
+    </div>
+
+    <!-- Modal for creating a new association -->
+    <div id="newAsso" class="hidden fixed inset-0 flex items-center justify-center z-50">
+        <div class="bg-white rounded-2xl shadow-lg w-[90%] p-8 relative">
+
+            <button id="closeNewAssoModal" class="absolute top-4 right-4 text-gray-500 hover:text-black text-2xl">&times;</button>
+
+            <h2 class="text-3xl text-center font-semibold mb-6">Créer une nouvelle association</h2>
+
+            <div class="flex">
+                <div class="w-1/6 flex">
+                    <div class="w-20 h-20 bg-black rounded-full flex items-center justify-center">
+                        {{ ux_icon('lucide:group', { 'class': 'w-10 h-10 text-white' }) }}
+                    </div>
+                </div>
+
+                <div class="w-5/6">
+                    {{ form_start(addForm, { 'attr': { 'class': 'flex flex-col gap-4' } }) }}
+
+                    {{ form_widget(addForm.name, {
+                        'attr': {
+                            'placeholder': 'Titre',
+                            'class': 'rounded-lg bg-gray-200 px-4 py-2 text-xl focus:outline-none focus:ring-2 focus:ring-gray-100'
+                        }
+                    }) }}
+
+                    {{ form_widget(addForm.description, {
+                        'attr': {
+                            'placeholder': 'Description',
+                            'class': 'bg-gray-200 rounded-lg px-4 py-2 text-xl focus:outline-none focus:ring-2 focus:ring-gray-100',
+                            'rows': 5
+                        }
+                    }) }}
+
+                    {{ form_widget(addForm.rnaNumber, {
+                        'attr': {
+                            'placeholder': 'Numéro RNA',
+                            'class': 'bg-gray-200 rounded-lg px-4 py-2 text-xl focus:outline-none focus:ring-2 focus:ring-gray-100',
+                            'rows': 1
+                        }
+                    }) }}
+
+                    {{ form_widget(addForm.url, {
+                        'attr': {
+                            'placeholder': 'Lien vers le site web',
+                            'class': 'bg-gray-200 rounded-lg px-4 py-2 text-xl focus:outline-none focus:ring-2 focus:ring-gray-100',
+                            'rows': 1
+                        }
+                    }) }}
+
+                    <label for="asso_imageFile" class="cursor-pointer flex items-center gap-2 text-green-600 hover:text-green-800">
+                        {{ ux_icon('uil:image-plus', { 'class': 'w-10 h-10' }) }}
+                        <span class="text-xl">Ajouter une image</span>
+                    </label>
+                    {{ form_widget(addForm.imageFile, { 'attr': { 'class': '', 'id': 'asso_imageFile' } }) }}
+
+                    <div class="mt-4">
+                        <img id="imagePreview" class="hidden w-40 h-40 object-cover rounded-lg shadow" alt="Aperçu de l'image">
+                    </div>
+
+                    <button type="submit"
+                            class="bg-black text-white py-3 rounded-lg text-xl hover:bg-green-600 transition">
+                        Ajouter
+                    </button>
+
+                    {{ form_end(addForm) }}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const openNewAssoModal = document.getElementById('openNewAssoModal');
+        const closeNewAssoModal = document.getElementById('closeNewAssoModal');
+        const newAsso = document.getElementById('newAsso');
+
+        openNewAssoModal.addEventListener('click', (e) => {
+            e.preventDefault();
+            newAsso.classList.remove('hidden');
+        });
+
+        closeNewAssoModal.addEventListener('click', () => {
+            newAsso.classList.add('hidden');
+        });
+
+        window.addEventListener('click', (e) => {
+            if (e.target === newAsso) newAsso.classList.add('hidden');
+        });
+    </script>
+
+
+
+{% endblock %}
+
+
+

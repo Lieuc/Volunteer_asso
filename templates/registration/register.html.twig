@@ -18,6 +18,18 @@
         {{ form_start(registrationForm) }}
 
         <div class="flex flex-col">
+            <label for="{{ registrationForm.firstName.vars.id }}" class="text-xl">Prénom</label>
+            {{ form_widget(registrationForm.firstName, {
+                attr: { class: 'form-control bg-gray-200 rounded-lg py-2 mb-4 px-2', placeholder: 'Votre prénom' }
+            }) }}
+            {{ form_errors(registrationForm.firstName) }}
+
+            <label for="{{ registrationForm.lastName.vars.id }}" class="text-xl">Nom</label>
+            {{ form_widget(registrationForm.lastName, {
+                attr: { class: 'form-control bg-gray-200 rounded-lg py-2 mb-4 px-2', placeholder: 'Votre nom' }
+            }) }}
+            {{ form_errors(registrationForm.lastName) }}
+
             <label for="{{ registrationForm.email.vars.id }}" class="text-xl">Email</label>
             {{ form_widget(registrationForm.email, {
                 attr: { class: 'form-control bg-gray-200 rounded-lg py-2 mb-4 px-2', placeholder: 'Votre email' }

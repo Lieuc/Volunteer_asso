@@ -19,3 +19,10 @@
 npm-debug.log
 yarn-error.log
 ###< symfony/webpack-encore-bundle ###
+.env
+.env.dev
+.env.test
+
+/.env
+/.env.dev
+/.env.test

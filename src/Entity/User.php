@@ -44,6 +44,10 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $avatarUrl = null;
 
+    /** 🆕 Description libre de l’utilisateur */
+    #[ORM\Column(type: Types::TEXT, nullable: true)]
+    private ?string $description = null;
+
     // Business roles (optional)
     #[ORM\ManyToMany(targetEntity: Role::class, inversedBy: 'users')]
     #[ORM\JoinTable(name: 'user_role')]
@@ -93,329 +97,66 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function eraseCredentials(): void {}
 
     // getters/setters ...
-    public function getPassword(): ?string
-    {
-        return $this->password;
-    }
-
-    public function getRoles(): array
-    {
-        $roles = $this->roles;
-
-        $roles[] = 'ROLE_USER';
-
-        return array_unique($roles);
-    }
-
-    public function getEmail(): ?string
-    {
-        return $this->email;
-    }
-
-    public function setEmail(string $email): static
-    {
-        $this->email = $email;
-        return $this;
-    }
-
-    public function getId(): ?int
-    {
-        return $this->id;
-    }
-
-    public function setRoles(array $roles): static
-    {
-        $this->roles = $roles;
-
-        return $this;
-    }
-
-    public function setPassword(string $password): static
-    {
-        $this->password = $password;
-
-        return $this;
-    }
-
-    public function getFirstName(): ?string
-    {
-        return $this->firstName;
-    }
-
-    public function setFirstName(?string $firstName): static
-    {
-        $this->firstName = $firstName;
-
-        return $this;
-    }
-
-    public function getLastName(): ?string
-    {
-        return $this->lastName;
-    }
-
-    public function setLastName(?string $lastName): static
-    {
-        $this->lastName = $lastName;
-
-        return $this;
-    }
-
-    public function getCreatedAt(): ?\DateTimeImmutable
-    {
-        return $this->createdAt;
-    }
-
-    public function setCreatedAt(\DateTimeImmutable $createdAt): static
-    {
-        $this->createdAt = $createdAt;
-
-        return $this;
-    }
-
-    public function isAvailable(): ?bool
-    {
-        return $this->isAvailable;
-    }
-
-    public function setIsAvailable(?bool $isAvailable): static
-    {
-        $this->isAvailable = $isAvailable;
-
-        return $this;
-    }
-
-    public function getAvatarUrl(): ?string
-    {
-        return $this->avatarUrl;
-    }
-
-    public function setAvatarUrl(?string $avatarUrl): static
-    {
-        $this->avatarUrl = $avatarUrl;
-
-        return $this;
-    }
-
-    /**
-     * @return Collection<int, Role>
-     */
-    public function getRoleEntities(): Collection
-    {
-        return $this->roleEntities;
-    }
-
-    public function addRoleEntity(Role $roleEntity): static
-    {
-        if (!$this->roleEntities->contains($roleEntity)) {
-            $this->roleEntities->add($roleEntity);
-        }
-
-        return $this;
-    }
-
-    public function removeRoleEntity(Role $roleEntity): static
-    {
-        $this->roleEntities->removeElement($roleEntity);
-
-        return $this;
-    }
-
-    /**
-     * @return Collection<int, Association>
-     */
-    public function getAssociationsOwned(): Collection
-    {
-        return $this->associationsOwned;
-    }
-
-    public function addAssociationsOwned(Association $associationsOwned): static
-    {
-        if (!$this->associationsOwned->contains($associationsOwned)) {
-            $this->associationsOwned->add($associationsOwned);
-            $associationsOwned->setOwner($this);
-        }
-
-        return $this;
-    }
-
-    public function removeAssociationsOwned(Association $associationsOwned): static
-    {
-        if ($this->associationsOwned->removeElement($associationsOwned)) {
-            // set the owning side to null (unless already changed)
-            if ($associationsOwned->getOwner() === $this) {
-                $associationsOwned->setOwner(null);
-            }
-        }
-
-        return $this;
-    }
-
-    /**
-     * @return Collection<int, Address>
-     */
-    public function getAddresses(): Collection
-    {
-        return $this->addresses;
-    }
-
-    public function addAddress(Address $address): static
-    {
-        if (!$this->addresses->contains($address)) {
-            $this->addresses->add($address);
-            $address->setUser($this);
-        }
-
-        return $this;
-    }
-
-    public function removeAddress(Address $address): static
-    {
-        if ($this->addresses->removeElement($address)) {
-            // set the owning side to null (unless already changed)
-            if ($address->getUser() === $this) {
-                $address->setUser(null);
-            }
-        }
-
-        return $this;
-    }
-
-    /**
-     * @return Collection<int, Association>
-     */
-    public function getFavoriteAssociations(): Collection
-    {
-        return $this->favoriteAssociations;
-    }
-
-    public function addFavoriteAssociation(Association $favoriteAssociation): static
-    {
-        if (!$this->favoriteAssociations->contains($favoriteAssociation)) {
-            $this->favoriteAssociations->add($favoriteAssociation);
-        }
-
-        return $this;
-    }
-
-    public function removeFavoriteAssociation(Association $favoriteAssociation): static
-    {
-        $this->favoriteAssociations->removeElement($favoriteAssociation);
-
-        return $this;
-    }
-
-    /**
-     * @return Collection<int, Mission>
-     */
-    public function getFavoriteMissions(): Collection
-    {
-        return $this->favoriteMissions;
-    }
-
-    public function addFavoriteMission(Mission $favoriteMission): static
-    {
-        if (!$this->favoriteMissions->contains($favoriteMission)) {
-            $this->favoriteMissions->add($favoriteMission);
-        }
-
-        return $this;
-    }
-
-    public function removeFavoriteMission(Mission $favoriteMission): static
-    {
-        $this->favoriteMissions->removeElement($favoriteMission);
-
-        return $this;
-    }
-
-    /**
-     * @return Collection<int, Message>
-     */
-    public function getMessagesSent(): Collection
-    {
-        return $this->messagesSent;
-    }
-
-    public function addMessagesSent(Message $messagesSent): static
-    {
-        if (!$this->messagesSent->contains($messagesSent)) {
-            $this->messagesSent->add($messagesSent);
-            $messagesSent->setSender($this);
-        }
-
-        return $this;
-    }
-
-    public function removeMessagesSent(Message $messagesSent): static
-    {
-        if ($this->messagesSent->removeElement($messagesSent)) {
-            // set the owning side to null (unless already changed)
-            if ($messagesSent->getSender() === $this) {
-                $messagesSent->setSender(null);
-            }
-        }
-
-        return $this;
-    }
-
-    /**
-     * @return Collection<int, Message>
-     */
-    public function getMessagesReceived(): Collection
-    {
-        return $this->messagesReceived;
-    }
-
-    public function addMessagesReceived(Message $messagesReceived): static
-    {
-        if (!$this->messagesReceived->contains($messagesReceived)) {
-            $this->messagesReceived->add($messagesReceived);
-            $messagesReceived->setReceiver($this);
-        }
-
-        return $this;
-    }
-
-    public function removeMessagesReceived(Message $messagesReceived): static
-    {
-        if ($this->messagesReceived->removeElement($messagesReceived)) {
-            // set the owning side to null (unless already changed)
-            if ($messagesReceived->getReceiver() === $this) {
-                $messagesReceived->setReceiver(null);
-            }
-        }
-
-        return $this;
-    }
-
-    /**
-     * @return Collection<int, Notification>
-     */
-    public function getNotifications(): Collection
-    {
-        return $this->notifications;
-    }
-
-    public function addNotification(Notification $notification): static
-    {
-        if (!$this->notifications->contains($notification)) {
-            $this->notifications->add($notification);
-            $notification->setUser($this);
-        }
-
-        return $this;
-    }
-
-    public function removeNotification(Notification $notification): static
-    {
-        if ($this->notifications->removeElement($notification)) {
-            // set the owning side to null (unless already changed)
-            if ($notification->getUser() === $this) {
-                $notification->setUser(null);
-            }
-        }
-
-        return $this;
-    }
+    public function getPassword(): ?string { return $this->password; }
+    public function getRoles(): array { $roles = $this->roles; $roles[] = 'ROLE_USER'; return array_unique($roles); }
+    public function getEmail(): ?string { return $this->email; }
+    public function setEmail(string $email): static { $this->email = $email; return $this; }
+    public function getId(): ?int { return $this->id; }
+    public function setRoles(array $roles): static { $this->roles = $roles; return $this; }
+    public function setPassword(string $password): static { $this->password = $password; return $this; }
+    public function getFirstName(): ?string { return $this->firstName; }
+    public function setFirstName(?string $firstName): static { $this->firstName = $firstName; return $this; }
+    public function getLastName(): ?string { return $this->lastName; }
+    public function setLastName(?string $lastName): static { $this->lastName = $lastName; return $this; }
+    public function getCreatedAt(): ?\DateTimeImmutable { return $this->createdAt; }
+    public function setCreatedAt(\DateTimeImmutable $createdAt): static { $this->createdAt = $createdAt; return $this; }
+    public function isAvailable(): ?bool { return $this->isAvailable; }
+    public function setIsAvailable(?bool $isAvailable): static { $this->isAvailable = $isAvailable; return $this; }
+    public function getAvatarUrl(): ?string { return $this->avatarUrl; }
+    public function setAvatarUrl(?string $avatarUrl): static { $this->avatarUrl = $avatarUrl; return $this; }
+
+    // 🆕 Description
+    public function getDescription(): ?string { return $this->description; }
+    public function setDescription(?string $description): static { $this->description = $description; return $this; }
+
+    // relations ...
+    /** @return Collection<int, Role> */
+    public function getRoleEntities(): Collection { return $this->roleEntities; }
+    public function addRoleEntity(Role $roleEntity): static { if (!$this->roleEntities->contains($roleEntity)) { $this->roleEntities->add($roleEntity); } return $this; }
+    public function removeRoleEntity(Role $roleEntity): static { $this->roleEntities->removeElement($roleEntity); return $this; }
+
+    /** @return Collection<int, Association> */
+    public function getAssociationsOwned(): Collection { return $this->associationsOwned; }
+    public function addAssociationsOwned(Association $associationsOwned): static { if (!$this->associationsOwned->contains($associationsOwned)) { $this->associationsOwned->add($associationsOwned); $associationsOwned->setOwner($this); } return $this; }
+    public function removeAssociationsOwned(Association $associationsOwned): static { if ($this->associationsOwned->removeElement($associationsOwned)) { if ($associationsOwned->getOwner() === $this) { $associationsOwned->setOwner(null); } } return $this; }
+
+    /** @return Collection<int, Address> */
+    public function getAddresses(): Collection { return $this->addresses; }
+    public function addAddress(Address $address): static { if (!$this->addresses->contains($address)) { $this->addresses->add($address); $address->setUser($this); } return $this; }
+    public function removeAddress(Address $address): static { if ($this->addresses->removeElement($address)) { if ($address->getUser() === $this) { $address->setUser(null); } } return $this; }
+
+    /** @return Collection<int, Association> */
+    public function getFavoriteAssociations(): Collection { return $this->favoriteAssociations; }
+    public function addFavoriteAssociation(Association $favoriteAssociation): static { if (!$this->favoriteAssociations->contains($favoriteAssociation)) { $this->favoriteAssociations->add($favoriteAssociation); } return $this; }
+    public function removeFavoriteAssociation(Association $favoriteAssociation): static { $this->favoriteAssociations->removeElement($favoriteAssociation); return $this; }
+
+    /** @return Collection<int, Mission> */
+    public function getFavoriteMissions(): Collection { return $this->favoriteMissions; }
+    public function addFavoriteMission(Mission $favoriteMission): static { if (!$this->favoriteMissions->contains($favoriteMission)) { $this->favoriteMissions->add($favoriteMission); } return $this; }
+    public function removeFavoriteMission(Mission $favoriteMission): static { $this->favoriteMissions->removeElement($favoriteMission); return $this; }
+
+    /** @return Collection<int, Message> */
+    public function getMessagesSent(): Collection { return $this->messagesSent; }
+    public function addMessagesSent(Message $messagesSent): static { if (!$this->messagesSent->contains($messagesSent)) { $this->messagesSent->add($messagesSent); $messagesSent->setSender($this); } return $this; }
+    public function removeMessagesSent(Message $messagesSent): static { if ($this->messagesSent->removeElement($messagesSent)) { if ($messagesSent->getSender() === $this) { $messagesSent->setSender(null); } } return $this; }
+
+    /** @return Collection<int, Message> */
+    public function getMessagesReceived(): Collection { return $this->messagesReceived; }
+    public function addMessagesReceived(Message $messagesReceived): static { if (!$this->messagesReceived->contains($messagesReceived)) { $this->messagesReceived->add($messagesReceived); $messagesReceived->setReceiver($this); } return $this; }
+    public function removeMessagesReceived(Message $messagesReceived): static { if ($this->messagesReceived->removeElement($messagesReceived)) { if ($messagesReceived->getReceiver() === $this) { $messagesReceived->setReceiver(null); } } return $this; }
+
+    /** @return Collection<int, Notification> */
+    public function getNotifications(): Collection { return $this->notifications; }
+    public function addNotification(Notification $notification): static { if (!$this->notifications->contains($notification)) { $this->notifications->add($notification); $notification->setUser($this); } return $this; }
+    public function removeNotification(Notification $notification): static { if ($this->notifications->removeElement($notification)) { if ($notification->getUser() === $this) { $notification->setUser(null); } } return $this; }
 }

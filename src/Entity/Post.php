@@ -26,8 +26,12 @@ class Post
     private ?string $imageUrl = null;
 
     #[ORM\ManyToOne(targetEntity: Association::class, inversedBy: 'posts')]
-    #[ORM\JoinColumn(nullable: false, onDelete: 'CASCADE')]
+    #[ORM\JoinColumn(nullable: true, onDelete: 'CASCADE')]
     private ?Association $association = null;
+
+    #[ORM\ManyToOne(targetEntity: User::class, inversedBy: 'posts')]
+    #[ORM\JoinColumn(nullable: false, onDelete: 'CASCADE')]
+    private ?User $user = null;
 
     public function __construct() { $this->postedAt = new \DateTimeImmutable(); }
 
@@ -92,6 +96,18 @@ class Post
     public function setAssociation(?Association $association): static
     {
         $this->association = $association;
+
+        return $this;
+    }
+
+    public function getUser(): ?User
+    {
+        return $this->user;
+    }
+
+    public function setUser(?User $user): static
+    {
+        $this->user = $user;
 
         return $this;
     }

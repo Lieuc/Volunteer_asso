@@ -1,0 +1,60 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Hello UserController!{% endblock %}
+
+{% block body %}
+
+
+<div class="px-24 py-16">
+    <h1 class="flex items-center gap-4 text-4xl font-semibold">{{ ux_icon('lucide:users-round', { 'class': 'w-10 h-10' }) }} Recherche d'utilisateurs</h1>
+    <p class="mt-8 text-2xl text-gray-500">Trouvez et connectez-vous avec d'autres volontaires</p>
+    {{ form_start(form, { attr: { class: 'mb-6' } }) }}
+    <div class="flex items-center mt-10 gap-4">
+        {{ form_widget(form.searchTerm) }}
+        <button class="px-8 py-4 bg-black text-white rounded-xl">Rechercher</button>
+    </div>
+    {{ form_end(form) }}
+
+    {% if users is not empty %}
+        <p class="text-gray-500">Utilisateurs trouvées: {{ users|length }}</p>
+        <ul class="space-y-4 mt-6 pb-10">
+            {% for user in users %}
+                <li class="px-8 py-8 border border-gray-300 rounded-2xl flex justify-between items-center" onclick="(function() { window.location.href = '{{ path('app_user_profile', { 'id': user.id }) }}'; })()">
+                    <header class="flex">
+                        <div class="1/4">
+                            {% if user.avatarUrl is not null %}
+                                <img src="{{ user.avatarUrl }}" alt="" class="w-25 h-25 rounded-full">
+                            {% else %}
+                                <div class="w-25 h-25 bg-gray-200 rounded-full flex items-center justify-center">
+                                    {{ ux_icon('lucide:user', { 'class': 'w-15 h-15 text-gray-500' }) }}
+                                </div>
+                            {% endif %}
+                        </div>
+                        <div class="flex flex-col px-12 py-4">
+                            <div class="flex items-center gap-4">
+                                <p class="text-3xl">{{ user.firstName }} {{ user.lastName }}</p>
+                                <p class="text-xl px-4 py-2 bg-gray-200 rounded-xl">{{ user.isAvailable ? 'Disponible' : 'Indisponible'}}</p>
+                            </div>
+                            <p class="text-xl flex items-center gap-2 mt-2 text-gray-500">{{ ux_icon('lucide:mail', { 'class': 'w-6'}) }} {{ user.email }}</p>
+                        </div>
+                    </header>
+                </li>
+            {% endfor %}
+        </ul>
+    {% elseif form.vars.submitted %}
+        <div class="flex flex-col items-center justify-center mt-20 gap-4">
+            <div class="w-25 h-25 rounded-full flex items-center justify-center">
+                {{ ux_icon('lucide:user', { 'class': 'w-25 h-25 text-gray-500' }) }}
+            </div>
+            <p class="text-2xl text-gray-500">Aucun utilisateur trouvé</p>
+        </div>
+    {% else %}
+        <div class="flex flex-col items-center justify-center mt-20 gap-4">
+            <div class="w-25 h-25 rounded-full flex items-center justify-center">
+                {{ ux_icon('lucide:user', { 'class': 'w-25 h-25 text-gray-500' }) }}
+            </div>
+            <p class="text-2xl text-gray-500">Commencer à écrire pour trouver un utilisateur</p>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

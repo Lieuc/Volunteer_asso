@@ -10,10 +10,26 @@
 
 <div>
     <header class="w-full h-100 relative bg-gradient-to-bl bg-green-400 rounded-b-2xl">
-        <div class="w-40 h-40 bg-black rounded-lg flex items-center justify-center absolute -bottom-20 left-20">
-            <svg class="w-20 h-20 fill-white" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                <path fill-rule="evenodd" clip-rule="evenodd" d="M12 12c2.21 0 4-1.79 4-4S14.21 4 12 4 8 5.79 8 8s1.79 4 4 4Zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4Z"/>
-            </svg>
+        <div class="w-40 h-40 rounded-full object-cover absolute -bottom-20 left-20">
+            {% if app.user.avatarUrl is not null or empty %}
+                <img id="openChangeImageModal" src="{{ app.user.avatarUrl }}" alt="Image de profil" class="w-full h-full object-cover rounded-2xl">
+            {% else %}
+                <div id="openChangeImageModal" class="w-full h-full bg-black rounded-lg flex items-center justify-center">
+                    <svg class="w-20 h-20 fill-white" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path fill-rule="evenodd" clip-rule="evenodd" d="M12 12c2.21 0 4-1.79 4-4S14.21 4 12 4 8 5.79 8 8s1.79 4 4 4Zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4Z"/>
+                    </svg>
+                </div>
+            {% endif %}
+
+            {% if app.user.isAvailable is true %}
+                <div class="w-6 h-6 absolute -bottom-2 -right-2 bg-green-500 border-4 text-white text-xs px-2 py-1 rounded-full">
+
+                </div>
+            {% else %}
+                <div class="w-6 h-6 absolute -bottom-2 -right-2 bg-red-500 border-4 text-white text-xs px-2 py-1 rounded-full">
+
+                </div>
+            {% endif %}
         </div>
     </header>
     <div class="mt-40 px-20 flex items-center justify-between">
@@ -48,6 +64,31 @@
                 </div>
             {% endfor %}
         {% endif %}
+    </div>
+
+    <!-- Image edit modal -->
+    <div id="changeImageModal" class="hidden fixed inset-0 flex items-center justify-center z-50">
+        <div class="bg-white flex flex-col items-center rounded-2xl shadow-lg w-[50%] p-8 relative">
+
+            <button id="closeChangeImageModal" class="absolute top-4 right-4 text-gray-500 hover:text-black text-2xl">&times;</button>
+            <h1 class="text-3xl font-bold mb-6 text-center">Modifier l’image de profil</h1>
+
+            {{ form_start(profileForm, { 'attr': { 'enctype': 'multipart/form-data' } }) }}
+            {{ form_widget(profileForm.profileImageFile, {
+                'attr': {
+                    'class': 'absolute opacity-1 w-40 h-40 cursor-pointer',
+                    'id': 'profileImageFileInput'
+                }
+            }) }}
+
+            <label for="profileImageFileInput" class="cursor-pointer">
+                <img id="profile_preview" src="{{ app.user.avatarUrl ?: '/default-avatar.png' }}"
+                     class="w-40 h-40 rounded-full object-cover cursor-pointer">
+            </label>
+
+            <button type="submit" class="mt-4 bg-black text-white px-4 py-2 rounded-lg w-full">Changer</button>
+            {{ form_end(profileForm) }}
+        </div>
     </div>
 
     <!-- Modal -->
@@ -114,10 +155,31 @@
 
 
 
+
     <script>
-        const openBtn = document.getElementById('openPostModal');
-        const closeBtn = document.getElementById('closePostModal');
-        const modal = document.getElementById('postModal');
+        const openPostModal = document.getElementById('openPostModal');
+        const closePostModal = document.getElementById('closePostModal');
+        const postModal = document.getElementById('postModal');
+
+        openPostModal.addEventListener('click', (e) => {
+            e.preventDefault();
+            postModal.classList.remove('hidden');
+        });
+
+        closePostModal.addEventListener('click', () => {
+            postModal.classList.add('hidden');
+        });
+
+        window.addEventListener('click', (e) => {
+            if (e.target === postModal) postModal.classList.add('hidden');
+        });
+    </script>
+
+
+    <script>
+        const openBtn = document.getElementById('openChangeImageModal');
+        const closeBtn = document.getElementById('closeChangeImageModal');
+        const modal = document.getElementById('changeImageModal');
 
         openBtn.addEventListener('click', (e) => {
             e.preventDefault();
@@ -156,6 +218,24 @@
             });
         }
 
+    </script>
+
+    <script>
+        const profileInput = document.getElementById('profileImageFileInput');
+        const profilePreview = document.getElementById('profile_preview');
+
+        if (profileInput && profilePreview) {
+            profileInput.addEventListener('change', (event) => {
+                const file = event.target.files[0];
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onload = (e) => {
+                        profilePreview.src = e.target.result;
+                    };
+                    reader.readAsDataURL(file);
+                }
+            });
+        }
     </script>
 
 {% endblock %}

@@ -1,0 +1,142 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Hello DashboardController!{% endblock %}
+
+{% block body %}
+<style>
+    .example-wrapper { margin: 1em auto; max-width: 800px; width: 95%; font: 18px/1.5 sans-serif; }
+    .example-wrapper code { background: #F5F5F5; padding: 2px 6px; }
+</style>
+
+<div>
+    <header class="w-full h-100 relative bg-gradient-to-bl bg-green-400 rounded-b-2xl">
+        <div class="w-40 h-40 rounded-full object-cover absolute -bottom-20 left-20">
+            {% if userProfile.avatarUrl is not null %}
+                <img id="openChangeImageModal" src="{{ userProfile.avatarUrl }}" alt="Image de profil" class="w-full h-full object-cover rounded-2xl">
+            {% else %}
+                <div id="openChangeImageModal" class="w-full h-full bg-black rounded-lg flex items-center justify-center">
+                    <svg class="w-20 h-20 fill-white" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path fill-rule="evenodd" clip-rule="evenodd" d="M12 12c2.21 0 4-1.79 4-4S14.21 4 12 4 8 5.79 8 8s1.79 4 4 4Zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4Z"/>
+                    </svg>
+                </div>
+            {% endif %}
+
+            {% if userProfile.isAvailable is true %}
+                <div class="w-6 h-6 absolute -bottom-2 -right-2 bg-green-500 border-4 text-white text-xs px-2 py-1 rounded-full">
+
+                </div>
+            {% else %}
+                <div class="w-6 h-6 absolute -bottom-2 -right-2 bg-red-500 border-4 text-white text-xs px-2 py-1 rounded-full">
+
+                </div>
+            {% endif %}
+        </div>
+    </header>
+    <div class="mt-40 px-20 flex items-center justify-between">
+        <p class="text-4xl font-semibold">{{ userProfile.firstname }} {{ userProfile.lastname }}</p>
+        <!--<a href="#" class="text-3xl border-1 border-gray-300 px-8 py-4 rounded-2xl">Message</a>-->
+        <a href="#" id="openPostModal" class="text-3xl border-1 border-gray-300 px-8 py-4 rounded-2xl">Poster</a>
+    </div>
+    <div class="px-20">
+        <p class="text-2xl text-gray-600">{{ userProfile.description ? userProfile.description : 'Aucune description disponible.' }}</p>
+    </div>
+    <div>
+        <div class="flex items-center gap-2 px-20 mt-5">
+            {{ ux_icon('uil:calender', { 'class': 'w-8 text-gray-400' }) }}
+            <span class="text-2xl text-gray-400">Rejoin le : {{ userProfile.createdAt|date('d/m/Y') }}</span>
+        </div>
+    </div>
+
+    <div class="px-20">
+        {% if posts is not empty %}
+            {% for post in posts %}
+                <div class="mt-10 p-6 bg-white rounded-lg shadow-md">
+                    <h2 class="text-3xl font-semibold">{{ post.title }}</h2>
+                    <p class="text-gray-600 mt-2 text-2xl">{{ post.content }}</p>
+                    <span class="text-lg text-gray-400">Publié le {{ post.postedAt|date('d/m/Y') }}</span>
+                    {% if post.imageUrl is not empty %}
+                        <img src="{{ post.imageUrl }}" alt="Image du post" class="w-full h-80 rounded-2xl mt-10 object-cover aspect-video">
+                    {% else %}
+                        <div class="w-full h-80 bg-gray-200 rounded-2xl mt-10">
+
+                        </div>
+                    {% endif %}
+                </div>
+            {% endfor %}
+        {% endif %}
+    </div>
+
+    <!-- Modal -->
+    <div id="postModal" class="hidden fixed inset-0 flex items-center justify-center z-50">
+        <div class="bg-white rounded-2xl shadow-lg w-[90%] p-8 relative">
+
+            <button id="closePostModal" class="absolute top-4 right-4 text-gray-500 hover:text-black text-2xl">&times;</button>
+
+            <h2 class="text-3xl text-center font-semibold mb-6">Créer un nouveau post</h2>
+
+            <div class="flex">
+                <div class="w-1/6 flex">
+                    <div class="w-20 h-20 bg-black rounded-full flex items-center justify-center">
+                        <svg class="w-10 h-10 fill-white" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                            <path fill-rule="evenodd" clip-rule="evenodd"
+                                  d="M12 12c2.21 0 4-1.79 4-4S14.21 4 12 4 8 5.79 8 8s1.79 4 4 4Zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4Z"/>
+                        </svg>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+
+</div>
+
+
+
+
+    <script>
+        const openBtn = document.getElementById('openPostModal');
+        const closeBtn = document.getElementById('closePostModal');
+        const modal = document.getElementById('postModal');
+
+        openBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            modal.classList.remove('hidden');
+        });
+
+        closeBtn.addEventListener('click', () => {
+            modal.classList.add('hidden');
+        });
+
+        window.addEventListener('click', (e) => {
+            if (e.target === modal) modal.classList.add('hidden');
+        });
+    </script>
+
+
+
+    <script>
+        const imageInput = document.getElementById('post_imageFile');
+        const preview = document.getElementById('imagePreview');
+
+        if (imageInput) {
+            imageInput.addEventListener('change', (event) => {
+                const file = event.target.files[0];
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onload = (e) => {
+                        preview.src = e.target.result;
+                        preview.classList.remove('hidden');
+                    };
+                    reader.readAsDataURL(file);
+                } else {
+                    preview.src = '';
+                    preview.classList.add('hidden');
+                }
+            });
+        }
+
+    </script>
+
+{% endblock %}

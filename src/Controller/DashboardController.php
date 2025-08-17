@@ -3,7 +3,9 @@
 namespace App\Controller;
 
 use App\Entity\Post;
+use App\Entity\User;
 use App\Form\PostType;
+use App\Form\ProfileImageType;
 use Doctrine\ORM\EntityManagerInterface;
 use Psr\Log\LoggerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -12,6 +14,7 @@ use Symfony\Component\HttpFoundation\File\Exception\FileException;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
+use Symfony\Contracts\HttpClient\HttpClientInterface;
 
 final class DashboardController extends AbstractController
 {
@@ -28,6 +31,7 @@ final class DashboardController extends AbstractController
         $user = $this->getUser();
         $userId = $user?->getId();
 
+        // Récup posts via API
         try {
             $response = $this->http->request('GET', $this->postApi . $userId);
             $posts = $response->toArray();
@@ -49,7 +53,7 @@ final class DashboardController extends AbstractController
 
             $post->setUser($user);
 
-            // Upload image
+            // Upload image du post
             $imageFile = $form->get('imageFile')->getData();
             if ($imageFile) {
                 $newFilename = uniqid().'.'.$imageFile->guessExtension();
@@ -67,10 +71,30 @@ final class DashboardController extends AbstractController
             return $this->redirectToRoute('app_dashboard');
         }
 
+        // === Formulaire Image de profil ===
+        $formImg = $this->createForm(\App\Form\ProfileImageType::class, $user);
+        $formImg->handleRequest($request);
+
+        if ($formImg->isSubmitted() && $formImg->isValid()) {
+            $imageFile = $formImg->get('profileImageFile')->getData();
+
+            if ($imageFile) {
+                $newFilename = uniqid().'.'.$imageFile->guessExtension();
+                $imageFile->move($this->getParameter('uploads_dir'), $newFilename);
+
+                $user->setAvatarUrl('/uploads/'.$newFilename);
+                $em->flush();
+
+                $this->addFlash('success', 'Photo de profil mise a jour.');
+                return $this->redirectToRoute('app_dashboard');
+            }
+        }
+
         return $this->render('dashboard/index.html.twig', [
             'controller_name' => 'DashboardController',
             'posts' => $posts,
-            'form' => $form->createView(), // ✅ nécessaire pour ton modal
+            'form' => $form->createView(),
+            'profileForm' => $formImg->createView(),
         ]);
     }
 
@@ -104,11 +128,27 @@ final class DashboardController extends AbstractController
             $em->persist($post);
             $em->flush();
 
+
+
+
             return $this->redirectToRoute('app_dashboard');
         }
 
         return $this->render('post/create.html.twig', [
             'form' => $form->createView(),
+        ]);
+    }
+
+    #[Route('/user/{id}', name: 'app_user_profile')]
+    public function profile(User $user, HttpClientInterface $http): Response
+    {
+        // récup posts via ton API (ou relation Doctrine si tu veux direct)
+        $response = $http->request('GET', $this->postApi . $user->getId());
+        $posts = $response->toArray();
+
+        return $this->render('dashboard/otherUser.html.twig', [
+            'userProfile' => $user,
+            'posts' => $posts,
         ]);
     }
 

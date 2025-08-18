@@ -33,7 +33,10 @@
         </div>
     </header>
     <div class="mt-40 px-20 flex items-center justify-between">
-        <p class="text-4xl font-semibold">{{ association.name }}</p>
+        <div class="flex items-center gap-4">
+            <p class="text-4xl font-semibold">{{ association.name }}</p>
+            <a class="border-1 border-gray-200 px-2 py-1 rounded" href="{{ path('app_association_applications', {'id': association.id}) }}">Missions</a>
+        </div>
         <!--<a href="#" class="text-3xl border-1 border-gray-300 px-8 py-4 rounded-2xl">Message</a>-->
         {% if isOwner %}
             <a href="#" id="openMissionModal" class="text-3xl border-1 border-gray-300 px-8 py-4 rounded-2xl">Ajouter mission</a>

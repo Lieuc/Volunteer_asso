@@ -22,12 +22,16 @@
             {% endif %}
 
             {% if association.isValidated is true %}
-                <div class="w-6 h-6 absolute -bottom-2 -right-2 bg-green-500 border-4 text-white text-xs px-2 py-1 rounded-full">
-
+                <div class="w-8 h-8 flex items-center justify-center absolute -bottom-2 -right-2 bg-green-500 border-4 text-white text-xs px-2 py-1 rounded-full">
+                    <div class="w-6 h-6 flex items-center justify-center">
+                        {{ ux_icon('lucide:check', { 'class': 'w-8 h-8' }) }}
+                    </div>
                 </div>
             {% else %}
-                <div class="w-6 h-6 absolute -bottom-2 -right-2 bg-red-500 border-4 text-white text-xs px-2 py-1 rounded-full">
-
+                <div class="w-8 h-8 flex items-center justify-center absolute -bottom-2 -right-2 bg-red-500 border-4 text-white text-xs px-2 py-1 rounded-full">
+                    <div class="w-6 h-6 flex items-center justify-center">
+                        {{ ux_icon('lucide:x', { 'class': 'w-8 h-8' }) }}
+                    </div>
                 </div>
             {% endif %}
         </div>
@@ -35,7 +39,12 @@
     <div class="mt-40 px-20 flex items-center justify-between">
         <div class="flex items-center gap-4">
             <p class="text-4xl font-semibold">{{ association.name }}</p>
-            <a class="border-1 border-gray-200 px-2 py-1 rounded" href="{{ path('app_association_applications', {'id': association.id}) }}">Missions</a>
+            {% if isOwner %}
+                <button id="openEditAssoModal" class="flex items-center gap-2 border border-gray-300 px-3 py-2 rounded-xl text-lg">
+                    {{ ux_icon('lucide:edit-2', { 'class': 'w-5 h-5' }) }} Éditer
+                </button>
+            {% endif %}
+            <a class="border border-gray-300 px-3 py-2 rounded-xl text-lg" href="{{ path('app_association_applications', {'id': association.id}) }}">Missions</a>
         </div>
         <!--<a href="#" class="text-3xl border-1 border-gray-300 px-8 py-4 rounded-2xl">Message</a>-->
         {% if isOwner %}
@@ -145,11 +154,39 @@
         </div>
     </div>
 
+    <!-- Modal for editing association -->
+
+    {% if isOwner and editForm is not null %}
+        <div id="editAssoModal" class="hidden fixed inset-0 flex items-center justify-center z-50">
+            <div class="bg-white rounded-2xl shadow-lg w-[90%] max-w-3xl p-8 relative">
+                <button id="closeEditAssoModal" class="absolute top-4 right-4 text-gray-500 hover:text-black text-2xl">&times;</button>
+                <h2 class="text-3xl text-center font-semibold mb-6">Éditer l’association</h2>
+                {{ form_start(editForm, { 'attr': { 'class': 'flex flex-col gap-4' } }) }}
+                {{ form_widget(editForm.name, { 'attr': { 'class': 'rounded-lg bg-gray-200 px-4 py-3 text-xl focus:outline-none focus:ring-2 focus:ring-black/30' } }) }}
+                {{ form_widget(editForm.description, { 'attr': { 'class': 'rounded-lg bg-gray-200 px-4 py-3 text-xl focus:outline-none focus:ring-2 focus:ring-black/30', 'rows': 4 } }) }}
+                {{ form_widget(editForm.rnaNumber, { 'attr': { 'class': 'rounded-lg bg-gray-200 px-4 py-3 text-xl focus:outline-none focus:ring-2 focus:ring-black/30' } }) }}
+                <button type="submit" class="bg-black text-white py-3 rounded-lg text-xl hover:bg-green-600 transition mt-2">Enregistrer</button>
+                {{ form_end(editForm) }}
+            </div>
+        </div>
+    {% endif %}
+
+
 
 
 
 </div>
 
+    <script>
+        const openEditBtn = document.getElementById('openEditAssoModal');
+        const closeEditBtn = document.getElementById('closeEditAssoModal');
+        const editAssoModal = document.getElementById('editAssoModal');
+        if (openEditBtn && closeEditBtn && editAssoModal) {
+            openEditBtn.addEventListener('click', (e) => { e.preventDefault(); editAssoModal.classList.remove('hidden'); });
+            closeEditBtn.addEventListener('click', () => editAssoModal.classList.add('hidden'));
+            window.addEventListener('click', (e) => { if (e.target === editAssoModal) editAssoModal.classList.add('hidden'); });
+        }
+    </script>
 
 
 

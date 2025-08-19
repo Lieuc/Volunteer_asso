@@ -111,6 +111,33 @@ final class MissionController extends AbstractController
         return $this->redirectToRoute('app_mission');
     }
 
+    #[Route('/me/missions/upcoming', name: 'app_user_upcoming_missions')]
+    public function myUpcomingMissions(EntityManagerInterface $em): Response
+    {
+        $user = $this->getUser();
+        if (!$user) {
+            return $this->redirectToRoute('app_login');
+        }
+
+        $now = new \DateTimeImmutable();
+
+        $qb = $em->createQueryBuilder()
+            ->select('m')
+            ->from(\App\Entity\Mission::class, 'm')
+            ->join('m.applications', 'a')
+            ->where('a.user = :user')
+            ->andWhere('a.isAccepted = true')
+            ->andWhere('m.startAt >= :now')
+            ->setParameter('user', $user)
+            ->setParameter('now', $now)
+            ->orderBy('m.startAt', 'ASC');
+
+        $missions = $qb->getQuery()->getResult();
+
+        return $this->render('mission/upcoming.html.twig', [
+            'missions' => $missions,
+        ]);
+    }
 
 
 }

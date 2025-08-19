@@ -1,0 +1,98 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Rechercher des missions{% endblock %}
+
+{% block body %}
+    <div class="px-24 py-16">
+        <h1 class="flex items-center gap-4 text-4xl font-semibold">
+            {{ ux_icon('lucide:hat-glasses', { 'class': 'w-10 h-10' }) }}
+            Recherche de missions
+        </h1>
+        {% for label, messages in app.flashes %}
+            {% if label starts with 'apply_' %}
+                {% for message in messages %}
+                    <div class="mb-4 px-4 py-3 rounded
+                  {{ label ends with '_success' ? 'bg-green-100 text-green-800' :
+                    (label ends with '_warning' ? 'bg-yellow-100 text-yellow-800' :
+                    (label ends with '_error' ? 'bg-red-100 text-red-800' : 'bg-gray-100 text-gray-800')) }}">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endfor %}
+        <p class="mt-8 text-2xl text-gray-500">Trouvez et postulez à de nouvelles missions</p>
+
+        {{ form_start(form, { attr: { class: 'mb-6' } }) }}
+        <div class="mt-10 grid grid-cols-1 md:grid-cols-3 gap-4 items-center">
+            <div class="md:col-span-2">
+                {{ form_widget(form.searchTerm) }}
+            </div>
+            <div class="">
+                {# filtre par domaine #}
+                {{ form_widget(form.domain) }}
+            </div>
+        </div>
+        <div class="mt-4">
+            <button class="px-8 py-4 bg-black text-white rounded-xl">Rechercher</button>
+        </div>
+        {{ form_end(form) }}
+
+        {% if missions is not empty %}
+            <p class="text-gray-500">Missions trouvées: {{ missions|length }}</p>
+            <ul class="space-y-4 mt-6 pb-10">
+                {% for mission in missions %}
+                    <li class="px-8 py-8 border border-gray-300 rounded-2xl flex justify-between items-center">
+                        <header class="flex w-full justify-between">
+                            <div class="flex">
+                                <div class="1/4 flex flex-col items-center justify-between">
+                                    <div class="w-25 h-25 bg-gray-200 rounded-full flex items-center justify-center">
+                                        {{ ux_icon('lucide:hat-glasses', { 'class': 'w-15 h-15 text-gray-500' }) }}
+                                    </div>
+                                    <div class="flex items-center">
+                                        {{ form_start(applyForms[mission.id]) }}
+                                        <button class="px-6 py-3 bg-green-600 text-white rounded-lg text-lg hover:bg-green-700 transition">
+                                            Postuler
+                                        </button>
+                                        {{ form_end(applyForms[mission.id]) }}
+                                    </div>
+                                </div>
+                                <div class="flex flex-col px-12 py-4">
+                                    <div class="flex items-center gap-4">
+                                        <p class="text-3xl">{{ mission.name }}</p>
+                                        <p class="text-xl px-4 py-2 bg-gray-200 rounded-xl">{{ mission.volunteerNeeded }} volontaires</p>
+                                    </div>
+                                    <p class="text-xl text-gray-500">{{ mission.getAssociation().name }}</p>
+                                    <p class="text-xl flex items-center gap-2 mt-2 text-gray-500">
+                                        {{ ux_icon('lucide:text', { 'class': 'w-6'}) }} {{ mission.description }}
+                                    </p>
+                                    <div class="flex items-center gap-1 flex-wrap">
+                                        {% for domaine in mission.getDomains() %}
+                                            <p class="bg-gray-200 w-fit text-gray-700 text-sm px-3 py-1 rounded-full mt-2 mr-2">
+                                                {{ domaine.name }}
+                                            </p>
+                                        {% endfor %}
+                                    </div>
+                                </div>
+                            </div>
+                        </header>
+                    </li>
+                {% endfor %}
+            </ul>
+
+        {% elseif form.vars.submitted %}
+            <div class="flex flex-col items-center justify-center mt-20 gap-4">
+                <div class="w-25 h-25 rounded-full flex items-center justify-center">
+                    {{ ux_icon('lucide:hat-glasses', { 'class': 'w-25 h-25 text-gray-500' }) }}
+                </div>
+                <p class="text-2xl text-gray-500">Aucune mission trouvée</p>
+            </div>
+        {% else %}
+            <div class="flex flex-col items-center justify-center mt-20 gap-4">
+                <div class="w-25 h-25 rounded-full flex items-center justify-center">
+                    {{ ux_icon('lucide:hat-glasses', { 'class': 'w-25 h-25 text-gray-500' }) }}
+                </div>
+                <p class="text-2xl text-gray-500">Commencez à écrire pour trouver des missions</p>
+            </div>
+        {% endif %}
+    </div>
+{% endblock %}

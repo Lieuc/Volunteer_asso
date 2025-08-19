@@ -1,0 +1,71 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Candidatures – {{ association.name }}{% endblock %}
+
+{% block body %}
+    <div class="px-24 py-16">
+        <h1 class="text-3xl font-semibold mb-6">Candidatures – {{ association.name }}</h1>
+
+        <div class="flex gap-3 mb-6">
+            <a class="px-4 py-2 rounded {{ status == 'PENDING' ? 'bg-black text-white' : 'bg-gray-200' }}"
+               href="{{ path('app_association_applications', {id: association.id, status: 'pending'}) }}">En attente</a>
+            <a class="px-4 py-2 rounded {{ status == 'ACCEPTED' ? 'bg-black text-white' : 'bg-gray-200' }}"
+               href="{{ path('app_association_applications', {id: association.id, status: 'accepted'}) }}">Acceptées</a>
+            <a class="px-4 py-2 rounded {{ status == 'REJECTED' ? 'bg-black text-white' : 'bg-gray-200' }}"
+               href="{{ path('app_association_applications', {id: association.id, status: 'rejected'}) }}">Refusées</a>
+        </div>
+
+        {% for label, messages in app.flashes %}
+            {% for message in messages %}
+                <div class="mb-4 px-4 py-3 rounded {{ label == 'success' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800' }}">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        {% endfor %}
+
+        {% if applications is empty %}
+            <p class="text-gray-500">Aucune candidature.</p>
+        {% else %}
+            <div class="space-y-4">
+                {% for appItem in applications %}
+                    <div class="border border-gray-200 rounded-xl p-4 flex justify-between items-center">
+                        <div>
+                            <p class="text-lg">
+                                <span class="font-semibold">{{ appItem.user.firstName }} {{ appItem.user.lastName }}</span>
+                                a postulé à <span class="font-semibold">{{ appItem.mission.name }}</span>
+                            </p>
+                            <p class="text-sm text-gray-500">
+                                Le {{ appItem.createdAt|date('d/m/Y H:i') }} —
+                                Statut :
+                                {% if appItem.isAccepted is same as(null) %}
+                                    En attente
+                                {% elseif appItem.isAccepted %}
+                                    Acceptée
+                                {% else %}
+                                    Refusée
+                                {% endif %}
+                            </p>
+                        </div>
+
+                        {% if appItem.isAccepted is same as(null) %}
+                            <div class="flex gap-2">
+                                <form method="post" action="{{ path('app_application_accept', {id: appItem.id}) }}">
+                                    <input type="hidden" name="_token" value="{{ csrf_token('accept_app_' ~ appItem.id) }}">
+                                    <button class="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700">Accepter</button>
+                                </form>
+                                <form method="post" action="{{ path('app_application_reject', {id: appItem.id}) }}">
+                                    <input type="hidden" name="_token" value="{{ csrf_token('reject_app_' ~ appItem.id) }}">
+                                    <button class="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700">Refuser</button>
+                                </form>
+                            </div>
+                        {% else %}
+                            <span class="text-sm px-3 py-1 rounded {{ appItem.isAccepted ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700' }}">
+              {{ appItem.isAccepted ? 'Acceptée' : 'Refusée' }}
+            </span>
+                        {% endif %}
+                    </div>
+                {% endfor %}
+            </div>
+        {% endif %}
+    </div>
+{% endblock %}

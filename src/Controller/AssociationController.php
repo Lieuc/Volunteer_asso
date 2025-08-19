@@ -24,7 +24,7 @@ final class AssociationController extends AbstractController
             throw $this->createAccessDeniedException('Vous devez être connecté.');
         }
 
-        // --- Formulaire d'ajout d'association (POST) ---
+        // formulairee d'ajout d'association
         $associationToAdd = new Association();
         $addForm = $this->createForm(AssociationAddType::class, $associationToAdd, [
             'method' => 'POST',
@@ -43,9 +43,9 @@ final class AssociationController extends AbstractController
                     $imageFile->move($this->getParameter('associations_dir'), $newFilename);
                 } catch (FileException $e) {
                     $this->addFlash('error', 'Erreur lors de l’upload de l’image.');
-                    // on peut aussi logger l’erreur
+
                 }
-                // suppose que l’entité Association possède un champ string imageUrl
+
                 $associationToAdd->setLogoUrl('/associations/'.$newFilename);
             }
 
@@ -56,13 +56,13 @@ final class AssociationController extends AbstractController
             return $this->redirectToRoute('app_association');
         }
 
-        // --- Formulaire de recherche (GET) ---
+        // Formulaire de recherche
         $searchForm = $this->createForm(AssociationSearch::class, null, [
             'method' => 'GET',
         ]);
         $searchForm->handleRequest($request);
 
-        // Query de base : toutes les associations de l’utilisateur connecté
+        // toutess les associations de l’utilisateur connecté
         $qb = $em->createQueryBuilder()
             ->select('a')
             ->from(Association::class, 'a')
@@ -102,13 +102,13 @@ final class AssociationController extends AbstractController
         $user = $this->getUser();
         $isOwner = ($user && $user === $association->getOwner());
 
-        // Création du formulaire MissionAddType
+
         $mission = new Mission();
         $form = $this->createForm(MissionAddType::class, $mission);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            // Lier la mission à l'association
+
             $mission->setAssociation($association);
 
             $em->persist($mission);
@@ -129,5 +129,7 @@ final class AssociationController extends AbstractController
             'form'            => $form->createView(), // ✅ On envoie le formulaire à Twig
         ]);
     }
+
+
 
 }

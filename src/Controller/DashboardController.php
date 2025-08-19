@@ -18,7 +18,7 @@ use Symfony\Contracts\HttpClient\HttpClientInterface;
 
 final class DashboardController extends AbstractController
 {
-    private string $postApi = 'http://mac.lan:8080/post-api/api/posts/';
+    private string $postApi = 'http://localhost:8080/post-api/api/posts/';
     private $http;
 
     public function __construct() {
@@ -41,7 +41,7 @@ final class DashboardController extends AbstractController
             $posts = [];
         }
 
-        // === Formulaire Post ===
+        // Formulaire Post
         $post = new Post();
         $form = $this->createForm(PostType::class, $post);
         $form->handleRequest($request);
@@ -71,7 +71,7 @@ final class DashboardController extends AbstractController
             return $this->redirectToRoute('app_dashboard');
         }
 
-        // === Formulaire Image de profil ===
+        // Formulaire Image de profil
         $formImg = $this->createForm(\App\Form\ProfileImageType::class, $user);
         $formImg->handleRequest($request);
 
@@ -120,7 +120,7 @@ final class DashboardController extends AbstractController
                 try {
                     $imageFile->move($this->getParameter('uploads_dir'), $newFilename);
                 } catch (FileException $e) {
-                    // log / erreur
+
                 }
                 $post->setImageUrl('/uploads/'.$newFilename);
             }
@@ -142,7 +142,6 @@ final class DashboardController extends AbstractController
     #[Route('/user/{id}', name: 'app_user_profile')]
     public function profile(User $user, HttpClientInterface $http): Response
     {
-        // récup posts via ton API (ou relation Doctrine si tu veux direct)
         $response = $http->request('GET', $this->postApi . $user->getId());
         $posts = $response->toArray();
 

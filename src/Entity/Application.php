@@ -11,6 +11,9 @@ use Doctrine\ORM\Mapping as ORM;
 #[ORM\UniqueConstraint(name: 'uniq_application_user_mission', columns: ['user_id','mission_id'])]
 class Application
 {
+    public const STATUS_PENDING  = 'PENDING';
+    public const STATUS_ACCEPTED = 'ACCEPTED';
+    public const STATUS_REJECTED = 'REJECTED';
     #[ORM\Id, ORM\GeneratedValue, ORM\Column]
     private ?int $id = null;
 

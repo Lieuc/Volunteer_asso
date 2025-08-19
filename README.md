@@ -1,12 +1,12 @@
 # 🚀 Plateforme Associations & Missions
 
-Ce projet est une application Symfony permettant la gestion d’associations, la création de missions, et la vérification automatique du numéro RNA grâce à une API externe.
+Ce projet est une application Symfony permettant la gestion d'associations, la création de missions, et la vérification automatique du numéro RNA grâce à une API externe.
 
 ---
 
 ## 📦 Prérequis
 
-Avant de commencer, assure-toi d’avoir installé :
+Avant de commencer, assure-toi d'avoir installé :
 
 - [PHP 8.2+](https://www.php.net/downloads)
 - [Composer](https://getcomposer.org/download/)
@@ -18,87 +18,82 @@ Avant de commencer, assure-toi d’avoir installé :
 
 ## 🔧 Installation du projet principal
 
-1. **Clone le dépôt**
-   ```bash
-   git clone <url-de-ton-projet>
-   cd ton-projet
-Installe les dépendances PHP
+### 1. **Clone le dépôt**
+```bash
+git clone <url-de-ton-projet>
+cd ton-projet
+```
 
-bash
-Copier
-Modifier
+### 2. **Installe les dépendances PHP**
+```bash
 composer install
-Configure l’environnement
-Copie le fichier .env :
+```
 
-bash
-Copier
-Modifier
+### 3. **Configure l'environnement**
+Copie le fichier `.env` :
+```bash
 cp .env .env.local
-Puis configure ta base de données dans .env.local :
+```
 
-env
-Copier
-Modifier
-DATABASE_URL="mysql://user:password@127.0.0.1:3306/associations_db"
-Migrations & Base de données
+### 4. **Base de données**
+```bash
+La bdd d'exemple et déjà présente et configuré et contient des données d'exemple
+```
 
-bash
-Copier
-Modifier
-php bin/console doctrine:database:create
-php bin/console doctrine:migrations:migrate
-Lancer le serveur Symfony
+### 5. **Lancer le serveur Symfony**
+```bash
+symfony server:start
+```
 
-bash
-Copier
-Modifier
-symfony serve -d
-Le projet est maintenant disponible sur http://127.0.0.1:8000.
+Le projet est maintenant disponible sur [http://127.0.0.1:8000](http://127.0.0.1:8000).
 
-🌍 Dépendances externes
-Le projet repose sur deux APIs complémentaires. Elles doivent être installées et démarrées en parallèle.
+---
 
-1️⃣ API-RNA-Check
-Cette API permet de vérifier la validité d’un numéro RNA et renvoie les informations d’une association.
+## 🌍 Dépendances externes
 
-Installation :
+Le projet repose sur deux APIs (jakarta & .net). Elles doivent être installées et démarrées en parallèle.
 
-bash
-Copier
-Modifier
+### 1️⃣ API-RNA-Check
+
+Cette API permet de vérifier la validité d'un numéro RNA et renvoie les informations d'une association.
+
+**Installation :**
+```bash
 git clone https://github.com/Lieuc/API-RNA-Check
 cd API-RNA-Check
-npm install
-npm start
-Par défaut, elle tourne sur http://localhost:5088.
+```
 
-2️⃣ post-api
-Cette API gère la partie messagerie et publication associée au projet.
+Par défaut, elle tourne sur [http://localhost:5088](http://localhost:5088).
 
-Installation :
+### 2️⃣ post-api
 
-bash
-Copier
-Modifier
+Cette API gère la récupération des posts des utilisateurs.
+
+**Installation :**
+```bash
 git clone https://github.com/Lieuc/post-api
 cd post-api
-npm install
-npm run dev
-⚙️ Configuration du projet Symfony
-Dans src/Controller/AssociationController.php, la vérification RNA est faite via l’API :
+```
 
-php
-Copier
-Modifier
+---
+
+## ⚙️ Configuration du projet Symfony
+
+Dans `src/Controller/AssociationController.php`, la vérification RNA est faite via l'API :
+
+```php
 private string $postApi = 'http://localhost:5088/api/Rna/check';
-⚠️ Assure-toi que API-RNA-Check tourne bien sur le port 5088.
+```
 
-🚀 Lancer le projet complet
-Démarre API-RNA-Check
+⚠️ **Assure-toi que API-RNA-Check tourne bien sur le port 5088.**
 
-Démarre post-api
+---
 
-Démarre ton projet Symfony
+## 🚀 Lancer le projet complet
 
-Ouvre http://127.0.0.1:8000
+1. Démarre **API-RNA-Check**
+2. Démarre **post-api**
+3. Démarre ton **projet Symfony**
+4. Ouvre [http://127.0.0.1:8000](http://127.0.0.1:8000)
+
+

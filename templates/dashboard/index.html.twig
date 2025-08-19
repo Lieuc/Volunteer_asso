@@ -55,7 +55,7 @@
                     <p class="text-gray-600 mt-2 text-2xl">{{ post.content }}</p>
                     <span class="text-lg text-gray-400">Publié le {{ post.postedAt|date('d/m/Y') }}</span>
                     {% if post.imageUrl is not empty %}
-                        <img src="{{ post.imageUrl }}" alt="Image du post" class="w-full h-80 rounded-2xl mt-10 object-cover aspect-video">
+                        <img src="{{ post.imageUrl }}" alt="Image du post" class="w-full min-h-100 rounded-2xl mt-10 object-cover aspect-video">
                     {% else %}
                         <div class="w-full h-80 bg-gray-200 rounded-2xl mt-10">
 

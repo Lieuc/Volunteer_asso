@@ -1,0 +1,54 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Mes prochaines missions{% endblock %}
+
+{% block body %}
+    <div class="px-24 py-16">
+        <h1 class="flex items-center gap-4 text-4xl font-semibold">
+            {{ ux_icon('lucide:calendar-days', { 'class': 'w-10 h-10' }) }}
+            Mes prochaines missions
+        </h1>
+
+        {% if missions is not empty %}
+            <p class="text-gray-500 mt-6">Total: {{ missions|length }}</p>
+            <ul class="space-y-4 mt-6 pb-10">
+                {% for mission in missions %}
+                    <li class="px-8 py-8 border border-gray-300 rounded-2xl flex justify-between items-center">
+                        <header class="flex w-full justify-between">
+                            <div class="flex">
+                                <div class="1/4 flex flex-col items-center justify-between">
+                                    <div class="w-25 h-25 bg-gray-200 rounded-full flex items-center justify-center">
+                                        {{ ux_icon('lucide:map-pin', { 'class': 'w-15 h-15 text-gray-500' }) }}
+                                    </div>
+                                </div>
+                                <div class="flex flex-col px-12 py-4">
+                                    <div class="flex items-center gap-4">
+                                        <p class="text-3xl">{{ mission.name }}</p>
+                                        <p class="text-xl px-4 py-2 bg-gray-200 rounded-xl">{{ mission.volunteerNeeded }} volontaires</p>
+                                    </div>
+                                    <p class="text-xl text-gray-500">{{ mission.getAssociation().name }}</p>
+                                    <p class="text-lg text-gray-500 mt-1">Du {{ mission.startAt|date('d/m/Y H:i') }} au {{ mission.endAt|date('d/m/Y H:i') }}</p>
+                                    <p class="text-xl flex items-center gap-2 mt-2 text-gray-500">
+                                        {{ ux_icon('lucide:text', { 'class': 'w-6' }) }} {{ mission.description }}
+                                    </p>
+                                    <div class="flex items-center gap-1 flex-wrap">
+                                        {% for domaine in mission.getDomains() %}
+                                            <span class="bg-gray-200 w-fit text-gray-700 text-sm px-3 py-1 rounded-full mt-2 mr-2">{{ domaine.name }}</span>
+                                        {% endfor %}
+                                    </div>
+                                </div>
+                            </div>
+                        </header>
+                    </li>
+                {% endfor %}
+            </ul>
+        {% else %}
+            <div class="flex flex-col items-center justify-center mt-20 gap-4">
+                <div class="w-25 h-25 rounded-full flex items-center justify-center">
+                    {{ ux_icon('lucide:calendar-x', { 'class': 'w-25 h-25 text-gray-500' }) }}
+                </div>
+                <p class="text-2xl text-gray-500">Aucune mission à venir</p>
+            </div>
+        {% endif %}
+    </div>
+{% endblock %}

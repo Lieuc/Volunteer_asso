@@ -11,7 +11,6 @@ Avant de commencer, assure-toi d'avoir installé :
 - [PHP 8.2+](https://www.php.net/downloads)
 - [Composer](https://getcomposer.org/download/)
 - [Symfony CLI](https://symfony.com/download)
-- [MySQL ou PostgreSQL](https://www.mysql.com/) (selon ta configuration)
 - [Node.js & NPM](https://nodejs.org/) pour gérer les assets frontend
 
 ---

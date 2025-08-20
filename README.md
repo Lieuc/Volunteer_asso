@@ -29,7 +29,9 @@ composer install
 ```
 
 ### 3. **Configure l'environnement**
+```bash
 Le fichier .env se situe déja dans le git pour pouvoir tester le projet
+```
 
 ### 4. **Base de données**
 ```bash

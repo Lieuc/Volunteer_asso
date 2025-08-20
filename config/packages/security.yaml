@@ -25,4 +25,11 @@ security:
                 target: app_login
 
     access_control:
-        - { path: ^/$, roles: ROLE_USER }
+        - { path: ^/login, roles: PUBLIC_ACCESS }
+        - { path: ^/register, roles: PUBLIC_ACCESS }
+        - { path: ^/reset-password, roles: PUBLIC_ACCESS }
+
+        - { path: ^/association, roles: ROLE_USER }
+        - { path: ^/mission, roles: ROLE_USER }
+        - { path: ^/dashboard, roles: ROLE_USER }
+        - { path: ^/user, roles: ROLE_USER }

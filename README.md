@@ -36,9 +36,19 @@ Le fichier .env se situe déja dans le git pour pouvoir tester le projet
 La bdd d'exemple et déjà présente et configuré et contient des données d'exemple
 ```
 
-### 5. **Lancer le serveur Symfony**
+### 5. **Installer dépendance tailwindcss**
+```bash
+npm i
+```
+
+### 6. **Lancer le serveur Symfony**
 ```bash
 symfony server:start
+```
+
+### 7. **Refresh tailwind (dans un autres teminal)**
+```bash
+npm run watch
 ```
 
 Le projet est maintenant disponible sur [http://127.0.0.1:8000](http://127.0.0.1:8000).

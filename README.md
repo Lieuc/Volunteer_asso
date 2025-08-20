@@ -20,7 +20,7 @@ Avant de commencer, assure-toi d'avoir installé :
 
 ### 1. **Clone le dépôt**
 ```bash
-git clone <url-de-ton-projet>
+git clone (https://github.com/Lieuc/Volunteer_asso)
 cd ton-projet
 ```
 
@@ -30,10 +30,7 @@ composer install
 ```
 
 ### 3. **Configure l'environnement**
-Copie le fichier `.env` :
-```bash
-cp .env .env.local
-```
+Le fichier .env se situe déja dans le git pour pouvoir tester le projet
 
 ### 4. **Base de données**
 ```bash
@@ -85,7 +82,7 @@ Dans `src/Controller/AssociationController.php`, la vérification RNA est faite 
 private string $postApi = 'http://localhost:5088/api/Rna/check';
 ```
 
-⚠️ **Assure-toi que API-RNA-Check tourne bien sur le port 5088.**
+⚠️ **Vérifier que API-RNA-Check tourne bien sur le port 5088.**
 
 ---
 

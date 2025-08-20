@@ -53,6 +53,9 @@ npm run watch
 
 Le projet est maintenant disponible sur [http://127.0.0.1:8000](http://127.0.0.1:8000).
 
+**Config lien bdd**
+Dans picture-api/src/main/java/com/post/Database.java, remplacer le chemin de la bdd avec celui sur vôtre machine.
+
 ---
 
 ## 🌍 Dépendances externes
